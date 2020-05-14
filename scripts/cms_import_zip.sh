@@ -5,9 +5,18 @@
 
 set -e
 
-ZIP_FILE=$1
+ZIP_URL=$1
 CONTEST_NAME=$2
+ZIP_FILE=/tmp/contest/${CONTEST_NAME}.zip
 CONTEST_DIR=/tmp/contest/${CONTEST_NAME}
+
+rm -rf ${ZIP_FILE}
+rm -rf ${CONTEST_DIR}
+mkdir -p /tmp/contest
+
+echo "Downloading ${ZIP_URL} to ${ZIP_FILE}"
+echo "wget -c -O ${ZIP_FILE} ${ZIP_URL}"
+wget -c -O ${ZIP_FILE} ${ZIP_URL}
 
 echo "Unpacking ..."
 mkdir -p "${CONTEST_DIR}"

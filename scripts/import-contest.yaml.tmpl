@@ -1,0 +1,12 @@
+kind: Pod
+apiVersion: v1
+metadata:
+  name: import-CONTEST_NAME
+spec:
+  containers:
+  - name: import
+    image: giolekva/ioi-cms:latest
+    imagePullPolicy: Always
+    command: ["/bin/sh"]
+    args: ["/scripts/cms_import_zip.sh", "ZIP_URL", "CONTEST_NAME"]
+  restartPolicy: Never
