@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: cms
+  namespace: cms
+spec:
+  selector:
+    matchLabels:
+      app: cms
+  serviceName: "cms"
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: cms
+    spec:
+      containers:
+      - name: cms
+        image: giolekva/ioi-cms:latest
+        volumeMounts:
+        - name: logs
+          mountPath: /var/local/log/cms
+  volumeClaimTemplates:
+  - metadata:
+      name: logs
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      storageClassName: "local-path"
+      resources:
+        requests:
+          storage: 1Gi

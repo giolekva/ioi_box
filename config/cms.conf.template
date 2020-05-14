@@ -40,7 +40,7 @@
     "_section": "Database",
 
     "_help": "Connection string for the database.",
-    "database": "postgresql+psycopg2://POSTGRES_USER:POSTGRES_PASSWORD@db:5432/cmsdb",
+    "database": "postgresql+psycopg2://POSTGRES_USER:POSTGRES_PASSWORD@db-pgpool.cms.svc:5432/POSTGRES_DB",
 
     "_help": "Whether SQLAlchemy prints DB queries on stdout.",
     "database_debug": false,

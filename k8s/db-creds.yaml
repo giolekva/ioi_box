@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: db-creds
+  namespace: cms
+type: Opaque
+data:
+  db:       Y21zZGI=  # cmsdb
+  username: Y21zdXNlcgo=  # cmsuser
+  password: Y21zdXNlcgo=  # cmsuser

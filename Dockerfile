@@ -41,7 +41,7 @@ RUN wget https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSI
 ADD scripts/ /scripts/
 
 # Create an empty config file, we will mount the real one during startup
-RUN touch /usr/local/etc/cms.conf
+COPY config/cms.conf /usr/local/etc/cms.conf
 
 # Expose logs
 VOLUME ["/var/local/log/cms"]

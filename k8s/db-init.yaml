@@ -1,0 +1,13 @@
+kind: Pod
+apiVersion: v1
+metadata:
+  name: db-init
+  namespace: cms
+spec:
+  containers:
+  - name: db-init
+    image: giolekva/ioi-cms:latest
+    imagePullPolicy: Always
+    command: ["/bin/sh"]
+    args: ["-c", "/scripts/cms_init.sh"]
+  restartPolicy: Never

@@ -5,8 +5,6 @@
 
 set -e
 
-dockerize -wait tcp://db:5432 -timeout 10s
-
 ZIP_FILE=$1
 CONTEST_NAME=$2
 CONTEST_DIR=/tmp/contest/${CONTEST_NAME}

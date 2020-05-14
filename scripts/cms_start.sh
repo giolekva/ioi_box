@@ -5,8 +5,6 @@
 
 set -e
 
-dockerize -wait tcp://db:5432 -timeout 10s
-
 echo "Starting log service ..."
 cmsLogService 0 &
 
