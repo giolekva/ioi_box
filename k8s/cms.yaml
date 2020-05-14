@@ -20,6 +20,8 @@ spec:
         volumeMounts:
         - name: logs
           mountPath: /var/local/log/cms
+        securityContext:
+          privileged: true
   volumeClaimTemplates:
   - metadata:
       name: logs
