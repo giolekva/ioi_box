@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block core %}
+
+<div class="core_title">
+  <h1>Users list</h1>
+</div>
+
+<form action="{{ url("users") }}" method="POST">
+  {{ xsrf_form_html|safe }}
+  Edit selected user:
+   <input type="submit"
+         name="operation"
+         value="Remove"
+{% if not admin.permission_all %}
+         disabled
+{% endif %}
+         />
+  <table class="bordered">
+    <thead>
+      <tr>
+        <th></th>
+        <th>Username</th>
+        <th>First name</th>
+        <th>Last name</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for u in user_list|sort(attribute="username") %}
+      <tr>
+        <td>
+          <input type="radio" name="user_id" value="{{ u.id }}"/>
+        </td>
+        <td><a href="{{ url("user", u.id) }}">{{ u.username }}</a></td>
+        <td>{{ u.first_name }}</td>
+        <td>{{ u.last_name }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</form>
+
+{% endblock core %}

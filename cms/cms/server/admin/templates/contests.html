@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block core %}
+
+<div class="core_title">
+  <h1>Contests list</h1>
+</div>
+
+<form action="{{ url("contests") }}" method="POST">
+  {{ xsrf_form_html|safe }}
+  Edit selected contest:
+   <input type="submit"
+         name="operation"
+         value="Remove"
+{% if not admin.permission_all %}
+         disabled
+{% endif %}
+         />
+  <table class="bordered">
+    <thead>
+      <tr>
+        <th></th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for c in contest_list %}
+      <tr>
+        <td>
+          <input type="radio" name="contest_id" value="{{ c.id }}"/>
+        </td>
+        <td><a href="{{ url("contest", c.id) }}">{{ c.name }}</a></td>
+        <td>{{ c.description }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</form>
+
+{% endblock core %}

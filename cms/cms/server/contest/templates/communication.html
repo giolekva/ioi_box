@@ -1,0 +1,130 @@
+{% extends "contest.html" %}
+
+{% set page = "communication" %}
+
+{% block core %}
+<div class="span9">
+
+
+<div class="page-header">
+    <h1>{% trans %}Communication{% endtrans %}</h1>
+</div>
+
+{% if contest.announcements|length > 0 %}
+<h2>{% trans %}Announcements{% endtrans %}</h2>
+<div class="announcement_list">
+    {% for msg in contest.announcements|reverse %}
+    <div class="announcement">
+        {% if msg.subject|length > 0 %}
+        <h4 class="subject">{{ msg.subject }}</h4>
+        {% else %}
+        <h4 class="subject empty">{% trans %}(no subject){% endtrans %}</h4>
+        {% endif %}
+        <span class="timestamp">{{ msg.timestamp|format_datetime_smart }}</span>
+        {% if msg.text|length > 0 %}
+        <div class="body">{{ msg.text }}</div>
+        {% endif %}
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+
+
+
+{% if questions_enabled %}
+
+<h2>{% trans %}Questions{% endtrans %}</h2>
+<div class="well question_submit">
+    <form class="form-horizontal" action="{{ contest_url("question") }}" method="POST">
+        {{ xsrf_form_html|safe }}
+        <fieldset>
+            <div class="control-group">
+                <label class="control-label" for="input_subject">{% trans %}Subject{% endtrans %}</label>
+                <div class="controls">
+                    <input type="text" name="question_subject" id="input_subject" class="input-xlarge" maxlength="50" list="task_names_list" autocomplete="off">
+                    <datalist id="task_names_list">
+                        {% if actual_phase >= 0 %}
+                            {% for task in contest.tasks %}
+                        <option value="{{ task.name }}">
+                            {% endfor %}
+                        {% endif %}
+                    </datalist>
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label" for="input_text">{% trans %}Text{% endtrans %}</label>
+                <div class="controls">
+                    <textarea id="input_text" class="input-xlarge" name="question_text" rows="5" maxlength="2000"></textarea>
+                </div>
+            </div>
+            <div class="control-group">
+                <div class="controls">
+                    <button type="submit" class="btn btn-primary">{% trans %}Ask question{% endtrans %}</button>
+                    <button type="reset" class="btn">{% trans %}Reset{% endtrans %}</button>
+                </div>
+            </div>
+        </fieldset>
+    </form>
+</div>
+
+
+{% if participation.questions|length > 0 %}
+<div class="question_list">
+    {% for msg in participation.questions|reverse %}
+    <div class="question">
+        {% if msg.subject|length > 0 %}
+        <h4 class="subject">{{ msg.subject }}</h4>
+        {% else %}
+        <h4 class="subject empty">{% trans %}(no subject){% endtrans %}</h4>
+        {% endif %}
+        <span class="timestamp">{{ msg.question_timestamp|format_datetime_smart }}</span>
+        {% if msg.text|length > 0 %}
+        <div class="body">{{ msg.text }}</div>
+        {% endif %}
+    </div>
+        {% if msg.reply_timestamp is not none %}
+    <div class="answer">
+            {% if msg.reply_subject|length > 0 %}
+        <h4 class="subject">{{ msg.reply_subject }}</h4>
+            {% else %}
+        <h4 class="subject empty">{% trans %}(no subject){% endtrans %}</h4>
+            {% endif %}
+        <span class="timestamp">{{ msg.reply_timestamp|format_datetime_smart }}</span>
+            {% if msg.reply_text|length > 0 %}
+        <div class="body">{{ msg.reply_text }}</div>
+            {% endif %}
+    </div>
+        {% else %}
+    <div class="no_answer">
+        {% trans %}no answer yet{% endtrans %}
+    </div>
+        {% endif %}
+    {% endfor %}
+</div>
+{% endif %}
+
+{% endif %}
+
+
+{% if participation.messages|length > 0 %}
+<h2>{% trans %}Messages{% endtrans %}</h2>
+<div class="message_list">
+    {% for msg in participation.messages|reverse %}
+    <div class="message">
+        {% if msg.subject|length > 0 %}
+        <h4 class="subject">{{ msg.subject }}</h4>
+        {% else %}
+        <h4 class="subject empty">{% trans %}(no subject){% endtrans %}</h4>
+        {% endif %}
+        <span class="timestamp">{{ msg.timestamp|format_datetime_smart }}</span>
+        {% if msg.text|length > 0 %}
+        <div class="body">{{ msg.text }}</div>
+        {% endif %}
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+
+
+</div>
+{% endblock core %}

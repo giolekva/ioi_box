@@ -1,0 +1,48 @@
+We would like to acknowledge all the following people for contributing
+to CMS.
+
+MAIN AUTHORS (have push rights on GIT repository)
+
+Bernard Blackham <bernard@largestprime.net>
+Matteo Boscariol <boscarim@hotmail.com>
+Stefano Maggiolo <s.maggiolo@gmail.com>
+Giovanni Mascellani <mascellani@poisson.phc.unipi.it>
+Luca Wehrstedt <luca.wehrstedt@gmail.com>
+
+OTHER CONTRIBUTORS
+
+Vytis Banaitis <vytis.banaitis@gmail.com>
+Giovanni Campagna (aka gcampax) <scampa.giovanni@gmail.com>
+Cheng, Ting-Yuan (aka magrady24) <magrady24+github@gmail.com>
+Luca Chiodini <luca@chiodini.org>
+William Di Luigi (aka wil93) <williamdiluigi@gmail.com>
+Johannes Kapfhammer (aka kapf) <jkapfham@ethz.ch>
+Vittorio Gambaletta (aka VittGam) <VittGam@VittGam.net>
+David Greenaway <mail@davidgreenaway.com>
+Fabian Gundlach (aka fagu) <320pointsguy@gmail.com>
+Masaki Hara (aka qnighy) <ackie.h.gmai@gmail.com>
+Artem Iglikov (aka artikz) <artem.iglikov@gmail.com>
+Damien Leroy <damien.leroy@be-oi.be>
+Tubérculo Martínez <nlehmann@dcc.uchile.cl>
+Evgeny Martynov <evgeny@epochfail.com>
+Edoardo Morassutto <edoardo.morassutto@gmail.com>
+Kento Nikaido (aka snukent) <snukent@gmail.com>
+William Pettersson <william.pettersson@gmail.com>
+Ludwig Schmidt <ludwigschmidt2@gmail.com>
+Federico Scrinzi (aka volpino) <fox91@anche.no>
+Konstantin Tretyakov <kt@ut.ee>
+Luca Versari <veluca93@gmail.com>
+Hyungsuk Yoon <youhanmir@gmail.com>
+Kenneth Wong <kenneth@wong.pro>
+Minwei Xu (aka vanshady) <faceswilliam@gmail.com>
+Myungwoo Chun <mc.tamaki@gmail.com>
+wafrelka <wafrelka@gmail.com>
+Andrea Cracco <guilucand@gmail.com>
+Petar Veličković <pv273@cam.ac.uk>
+Amir Keivan Mohtashami <akmohtashami97@gmail.com>
+Kārlis Seņko <karlis3p70l1ij@gmail.com>
+Peyman Jabbarzade Ganje <peyman.jabarzade@gmail.com>
+Valentin Rosca <rosca.valentin2012@gmail.com>
+Alexander Kernozhitsky <sh200105@mail.ru>
+And many other people that didn't write code, but provided useful
+comments, suggestions and feedback. :-)

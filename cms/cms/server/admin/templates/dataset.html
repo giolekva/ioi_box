@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block core %}
+
+<div class="core_title">
+  <h1>{{ task.title }} (<a href="{{ url("task", task.id) }}">{{ task.name }}</a>)</h1>
+</div>
+
+{% set dataset_selector_par_url = url("dataset") %}
+{% include "fragments/dataset_selector.html" %}
+
+<h2 id="title_submissions" class="toggling_on">Submissions</h2>
+<div id="submissions">
+  <p>
+    Reevaluate all {{ submission_count }} submissions for this dataset
+    {{ ReevaluationButtons(
+           url("dataset", shown_dataset.id),
+           dataset_id=shown_dataset.id) }}
+  </p>
+
+  {% set page_url = url["dataset"][shown_dataset.id] %}
+  {% include "fragments/submission_rows.html" %}
+
+  <div class="hr"></div>
+</div>
+
+{% endblock core %}

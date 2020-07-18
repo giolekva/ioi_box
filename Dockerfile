@@ -19,8 +19,9 @@ ENV LANGUAGE en_US:en
 ENV LC_ALL en_US.UTF-8
 
 # Get CMS
-RUN wget https://github.com/cms-dev/cms/releases/download/v1.4.rc1/v1.4.rc1.tar.gz
-RUN tar xvf v1.4.rc1.tar.gz
+# RUN wget https://github.com/cms-dev/cms/releases/download/v1.4.rc1/v1.4.rc1.tar.gz
+# RUN tar xvf v1.4.rc1.tar.gz
+COPY cms /cms
 
 # Install dependencies
 WORKDIR /cms

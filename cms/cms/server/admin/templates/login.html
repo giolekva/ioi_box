@@ -1,0 +1,52 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <link rel="shortcut icon" href="{{ url("static", "favicon.ico") }}" />
+    <link rel="stylesheet" type="text/css" href="{{ url("static", "reset.css") }}">
+    <link rel="stylesheet" type="text/css" href="{{ url("static", "aws_style.css") }}">
+    <title>Admin</title>
+  </head>
+  <body class="admin">
+    <div id="login-content">
+
+{% if admin is undefined %}
+<h1>Welcome</h1>
+    {% if handler.get_argument("login_error", "") != "" %}
+<h4 class="alert">Failed to log in.</h4>
+    {% endif %}
+<p>Please log in:</p>
+<form action="{{ url("login") }}" method="POST">
+  {{ xsrf_form_html|safe }}
+  {% set next_page = handler.get_argument("next", none) %}
+  {% if next_page is not none %}
+  <input type="hidden" name="next" value="{{ next_page }}">
+  {% endif %}
+  <div class="section">
+    <label>
+      <span>Username</span>
+      <input type="text" name="username">
+    </label>
+  </div>
+  <div class="section">
+    <label class="control-label">
+      <span>Password</span>
+      <input type="password" name="password">
+    </label>
+  </div>
+  <div class="section">
+    <button type="submit">Login</button>
+    <button type="reset">Reset</button>
+  </div>
+</form>
+{% else %}
+
+You are already logged in. <a href="{{ url("logout") }}">Logout</a>
+or go to the <a href="{{ url() }}">overview</a>.
+
+{% endif %}
+
+    </div>
+  </body>
+</html>

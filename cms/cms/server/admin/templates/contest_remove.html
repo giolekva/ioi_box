@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block core %}
+<div class="core_title">
+  <h1>Remove Contest</h1>
+</div>
+
+{% if admin.permission_all %}
+<p>
+  Are you sure you want to remove contest {{ contest.name }} from CMS, including all related data?
+  <br>
+  This will remove {{ contest.participations|length }} participation(s) and {{ submission_count }} submission(s).
+  <br>
+  This operation cannot be undone.
+</p>
+<br>
+<a onclick="CMS.AWSUtils.ajax_delete('{{ url("contests", contest.id, "remove") }}'); " class="button-link">Yes, remove</a>
+<a href="{{ url("contests") }}" class="button-link">No</a>
+
+{% else %}
+You do not have permission to remove a contest.
+{% endif %}
+
+{% endblock core %}

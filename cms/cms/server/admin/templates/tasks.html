@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block core %}
+
+<div class="core_title">
+  <h1>Tasks list</h1>
+</div>
+
+<form action="{{ url("tasks") }}" method="POST">
+  {{ xsrf_form_html|safe }}
+  Edit selected task:
+   <input type="submit"
+         name="operation"
+         value="Remove"
+{% if not admin.permission_all %}
+         disabled
+{% endif %}
+         />
+  <table class="bordered">
+    <thead>
+      <tr>
+        <th></th>
+        <th>Name</th>
+        <th>Title</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for t in task_list %}
+      <tr>
+        <td>
+          <input type="radio" name="task_id" value="{{ t.id }}"/>
+        </td>
+        <td><a href="{{ url("task", t.id) }}">{{ t.name }}</a></td>
+        <td>{{ t.title }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</form>
+
+{% endblock core %}

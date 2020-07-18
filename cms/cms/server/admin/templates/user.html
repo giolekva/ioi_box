@@ -1,0 +1,143 @@
+{% extends "base.html" %}
+
+{% block core %}
+<h1>{{ user.first_name }} {{ user.last_name }} ({{ user.username }})</h1>
+
+<h2 id="title_participations" class="toggling_on">Participations</h2>
+<div id="participations">
+
+  <form action="{{ url("user", user.id, "add_participation") }}" method="POST">
+    {{ xsrf_form_html|safe }}
+    Add a new participation:
+    <select name="contest_id">
+      <option value="null" selected>Select a contest</option>
+      {% for c in unassigned_contests %}
+      <option value="{{ c.id }}">
+        {{ c.name }}
+      </option>
+      {% endfor %}
+    </select>
+    <input type="checkbox" name="hidden" id="hidden" /><label for="hidden">Hidden</label>
+    <input type="checkbox" name="unrestricted" id="unrestricted" /><label for="unrestricted">Unrestricted</label>
+    <input type="submit" value="Add participation" />
+  </form>
+
+  {% if participations == [] %}
+  <p>No participations found.</p>
+  {% else %}
+  <form action="{{ url("user", user.id, "edit_participation") }}" method="POST">
+    {{ xsrf_form_html|safe }}
+    Edit selected participation:
+    <input type="submit" name="operation" value="Remove" />
+    <table class="bordered">
+      <thead>
+        <tr>
+          <th></th>
+          <th>Participation</th>
+          <th>Hidden?</th>
+          <th>Unrestricted?</th>
+          <th>Contest</th>
+          <th>Contest description</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for p in participations %}
+        <tr>
+          <td>
+            <input type="radio" name="contest_id" value="{{ p.contest.id }}"/>
+          </td>
+          <td><a href="{{ url("contest", p.contest.id, "user", p.user.id, "edit") }}">{{ p.user.username }}</a></td>
+          <td>{{ p.hidden }}</td>
+          <td>{{ p.unrestricted }}</td>
+          <td><a href="{{ url("contest", p.contest.id) }}">{{ p.contest.name }}</a></td>
+          <td>{{ p.contest.description }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </form>
+  {% endif %}
+  <div class="hr"></div>
+</div>
+
+
+<h2 id="title_general_info" class="toggling_on">General Information</h2>
+<div id="general_info">
+  <!-- We use "multipart/form-data" to have Tornado distinguish between missing and empty values. -->
+  <form enctype="multipart/form-data" action="{{ url("user", user.id) }}" method="POST" style="display:inline;">
+    {{ xsrf_form_html|safe }}
+    <table>
+      <tr>
+        <td>
+          <span class="info" title="First name of the contestant."></span>
+          First name
+        </td>
+        <td><input type="text" name="first_name" value="{{ user.first_name }}"/></td>
+      </tr>
+      <tr>
+        <td>
+          <span class="info" title="Last name of the contestant."></span>
+          Last name
+        </td>
+        <td><input type="text" name="last_name" value="{{ user.last_name }}"/></td>
+      </tr>
+      <tr>
+        <td>
+          <span class="info" title="Username of the contestant (used to log in)."></span>
+          Username
+        </td>
+        <td><input type="text" name="username" value="{{ user.username }}"/></td>
+      </tr>
+      <tr>
+        <td>
+          <span class="info" title="Contestant password. Caution: stored in plain text."></span>
+          Password
+        </td>
+        <td>
+          {% set hashed_password = user.password %}
+          {% include "fragments/hashed_password_form.html" %}
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <span class="info" title="Contestant e-mail address."></span>
+          E-mail
+        </td>
+        <td><input type="text" name="email" value="{{ user.email if user.email is not none else "" }}"/></td>
+      </tr>
+      <tr>
+        <td>
+          <span class="info" title="Timezone of the contestant, used to display start, end times and the current server time in local time.
+                                    Example: 'Europe/Rome', 'America/New_York', ..."></span>
+          Timezone
+        </td>
+        <td><input type="text" name="timezone" value="{{ user.timezone if user.timezone is not none else "" }}"></td>
+      </tr>
+      <tr>
+        <td>
+          <span class="info" title="Comma-separated list of language codes, from the most to the least preferred.
+                                    Example: 'en, ja'."></span>
+          Preferred languages
+        </td>
+        <td><input type="text" name="preferred_languages" value="{{ user.preferred_languages|join(", ") }}"></td>
+      </tr>
+    </table>
+    <input type="submit" value="Update" />
+    <input type="reset" value="Reset" />
+  </form>
+  <form action="{{ url("users") }}" method="POST" style="display:inline;">
+      {{ xsrf_form_html|safe }}
+      <input type="hidden" name="user_id" value="{{ user.id }}"/>
+      <input type="submit"
+           name="operation"
+           value="Remove" style="float: right;"
+  {% if not admin.permission_all %}
+           disabled
+  {% endif %}
+           />
+  </form>
+  <div class="hr"></div>
+</div>
+
+
+{% endblock core %}

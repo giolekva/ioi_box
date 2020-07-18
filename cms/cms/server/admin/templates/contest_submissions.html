@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block core %}
+<h1>All Submissions</h1>
+
+<div id="submissions">
+
+  <p>
+    Reevaluate all {{ submission_count }} submissions in this contest (for all datasets)
+    {{ ReevaluationButtons(
+           url("contest", contest.id, "submissions"),
+           contest_id=contest.id) }}
+  </p>
+
+  {% set page_url = url["contest"][contest.id]["submissions"] %}
+  {% include "fragments/submission_rows.html" %}
+</div>
+
+{% endblock core %}

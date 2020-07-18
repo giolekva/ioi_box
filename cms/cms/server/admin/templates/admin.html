@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block core %}
+
+<div class="core_title">
+  <h1>{{ admin.username }} ({{ admin.name }})</h1>
+</div>
+
+<!-- We use "multipart/form-data" to have Tornado distinguish between missing and empty values. -->
+<form enctype="multipart/form-data" action="{{ url("admin", admin.id) }}" method="POST">
+  {{ xsrf_form_html|safe }}
+  <h2>Admin information</h2>
+
+  {% include "fragments/admin_form.html" %}
+
+  <input type="submit" value="Update" />
+  <input type="reset" value="Reset" />
+
+  <br/>
+
+  Leaving the password field empty will keep the previous password.
+</form>
+
+{% if admin.permission_all %}
+<hr/>
+
+<a onclick="CMS.AWSUtils.ajax_delete('{{ url("admin", admin.id) }}'); ">Delete this admin</a>
+{% endif %}
+
+{% endblock core %}

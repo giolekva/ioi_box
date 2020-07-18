@@ -1,0 +1,218 @@
+{% extends "base.html" %}
+
+{% block title %}
+    {{ contest.description }}
+{% endblock title %}
+
+{% block js %}
+
+
+    <script>
+var LANGUAGES = {
+{% for lang in contest.languages %}
+    '{{ lang }}': {
+{% for extension in (lang|to_language).source_extensions %}
+        '{{ extension }}': true,
+{% endfor %}
+    },
+{% endfor %}
+};
+
+{% if participation is undefined %}
+var utils = new CMS.CWSUtils("{{ url() }}", "{{ contest_url() }}", "{{ contest.name }}",
+                             0, 0, 0, 0, 0);
+{% else %}
+// FIXME use Date objects
+var utils = new CMS.CWSUtils("{{ url() }}", "{{ contest_url() }}", "{{ contest.name }}",
+                             {{ now|make_timestamp }},
+                             {# What we do is: if timezone is +HH:MM we return the UNIX timestamp + 3600*HH + 60*MM. #}
+                             {{ now.replace(tzinfo=utc).astimezone(timezone).replace(tzinfo=none)|make_timestamp }},
+                             {{ current_phase_begin|make_timestamp }},
+                             {{ current_phase_end|make_timestamp }},
+                             {{ actual_phase }});
+$(document).ready(function () {
+    utils.update_time({% if contest.per_user_time is not none %}true{% else %}false{% endif %});
+    setInterval(function() {
+        utils.update_time({% if contest.per_user_time is not none %}true{% else %}false{% endif %});
+    }, 1000);
+    utils.update_unread_count(0{% if page == "communication" %}, 0{% endif %});
+    utils.update_notifications(true);
+    setInterval(function() { utils.update_notifications(); }, 30000);
+    $('#main').css('top', $('#navigation_bar').outerHeight());
+});
+    {% endif %}
+
+{% block additional_js %}{% endblock additional_js %}
+    </script>
+{% endblock js %}
+
+{% block body %}
+        <div id="navigation_bar" class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="brand" href="{{ contest_url() }}">{{ contest.description }}</a>
+{% if available_translations|length > 1 %}
+                    <p class="navbar-text pull-right">
+                        <select id="lang" class="form-control btn btn-info" onchange="utils.switch_lang()">
+                            <option value=""{% if cookie_translation is none %} selected{% endif %}>{% trans lang=automatic_translation.name %}Automatic ({{ lang }}){% endtrans %}</option>
+                        {% for lang_code, t in available_translations|dictsort(by="key") %}
+                            <option value="{{ lang_code }}"{% if t == cookie_translation %} selected{% endif %}>{{ t.name }}</option>
+                        {% endfor %}
+                        </select>
+                    </p>
+{% endif %}
+{% if participation is defined %}
+                    <form action="{{ contest_url("logout") }}" method="POST" class="navbar-form pull-right">
+                        {{ xsrf_form_html|safe }}
+                        <button type="submit" class="btn btn-warning">{% trans %}Logout{% endtrans %}</button>
+                    </form>
+                    <p class="navbar-text pull-right">
+                        {% trans first_name=user.first_name,
+                                 last_name=user.last_name,
+                                 username=user.username %}
+                            Logged in as <strong>{{ first_name }} {{ last_name }}</strong> <em>({{ username }})</em>
+                        {% endtrans %}
+                    </p>
+{% endif %}
+                </div>
+            </div>
+        </div>
+{% if participation is undefined %}
+    {% if handler.get_argument("login_error", "") != "" %}
+        <div id="notifications" class="notifications">
+            <div class="alert alert-block alert-error notification">
+                <a class="close" data-dismiss="alert" href="#">&#xD7;</a>
+                <h4 class="alert-heading">{% trans %}Failed to log in.{% endtrans %}</h4>
+            </div>
+        </div>
+    {% endif %}
+        <div class="login_container">
+            <div class="login_box hero-unit">
+                <h1>{% trans %}Welcome{% endtrans %}</h1>
+                <p>{% trans %}Please log in{% endtrans %}</p>
+                <form class="form-horizontal" action="{{ contest_url("login") }}" method="POST">
+                    {{ xsrf_form_html|safe }}
+                    {% set next_page = handler.get_argument("next", none) %}
+                    {% if next_page is not none %}
+                    <input type="hidden" name="next" value="{{ next_page }}">
+                    {% endif %}
+                    <fieldset>
+                        <div class="control-group">
+                            <label class="control-label" for="username">{% trans %}Username{% endtrans %}</label>
+                            <div class="controls">
+                                <input type="text" class="input-xlarge" name="username" id="username">
+                            </div>
+                        </div>
+                        <div class="control-group">
+                            <label class="control-label" for="password">{% trans %}Password{% endtrans %}</label>
+                            <div class="controls">
+                                <input type="password" class="input-xlarge" name="password" id="password">
+                            </div>
+                        </div>
+                        <div class="control-group">
+                            <div class="controls">
+                                <button type="submit" class="btn btn-primary btn-large">{% trans %}Login{% endtrans %}</button>
+                                <button type="reset" class="btn btn-large">{% trans %}Reset{% endtrans %}</button>
+                            </div>
+                        </div>
+                    </fieldset>
+                </form>
+            </div>
+        </div>
+{% else %}
+        <div id="notifications" class="notifications"></div>
+        <!-- Some hidden divs to provide translations of strings used by JS -->
+        <div style="display: none" id="translation_new_message">
+            {% trans %}New message{% endtrans %}
+        </div>
+        <div style="display: none" id="translation_new_announcement">
+            {% trans %}New announcement{% endtrans %}
+        </div>
+        <div style="display: none" id="translation_new_answer">
+            {% trans %}New answer{% endtrans %}
+        </div>
+        <div style="display: none" id="translation_unread">
+            {% trans %}%d unread{% endtrans %}
+        </div>
+        <div style="display: none" id="translation_until_contest_starts">
+            {% trans %}Until contest starts:{% endtrans %}
+        </div>
+        <div style="display: none" id="translation_until_contest_ends">
+            {% trans %}Until contest ends:{% endtrans %}
+        </div>
+        <div style="display: none" id="translation_until_analysis_starts">
+            {% trans %}Until analysis starts:{% endtrans %}
+        </div>
+        <div style="display: none" id="translation_until_analysis_ends">
+            {% trans %}Until analysis ends:{% endtrans %}
+        </div>
+        <div style="display: none" id="translation_time_left">
+            {% trans %}Time left:{% endtrans %}
+        </div>
+        <!-- End -->
+        <div id="main" class="container">
+            <div class="row">
+                <div class="span3">
+                    <h3 id="server_time_box">
+                        <span id="server_time_label">{% trans %}Server time:{% endtrans %}</span>
+                        <span id="server_time"></span>
+                    </h3>
+                    <h3 id="countdown_box">
+                        <span id="countdown_label"></span>
+                        <span id="countdown"></span>
+                    </h3>
+                    <div class="well" style="padding: 8px 0;">
+                        <ul class="nav nav-list">
+
+                            <li{% if page == "overview" %} class="active"{% endif %}>
+                                <a href="{{ contest_url() }}">{% trans %}Overview{% endtrans %}</a>
+                            </li>
+                            <li{% if page == "communication" %} class="active"{% endif %}>
+                                <a href="{{ contest_url("communication") }}">{% trans %}Communication{% endtrans %}
+                                    <span id="unread_count" class="label label-warning no_unread"></span>
+                                </a>
+                            </li>
+    {% if actual_phase == 0 or actual_phase == 3 or participation.unrestricted %}
+        {% for t_iter in contest.tasks %}
+                            <li class="nav-header">
+                                {{ t_iter.name }}
+                            </li>
+                            <li{% if page == "task_description" and task == t_iter %} class="active"{% endif %}>
+                                <a href="{{ contest_url("tasks", t_iter.name, "description") }}">{% trans %}Statement{% endtrans %}</a>
+                            </li>
+                            <li{% if page == "task_submissions" and task == t_iter %} class="active"{% endif %}>
+                                <a href="{{ contest_url("tasks", t_iter.name, "submissions") }}">{% trans %}Submissions{% endtrans %}</a>
+                            </li>
+        {% endfor %}
+    {% endif %}
+                            <li class="divider"></li>
+                            <li{% if page == "documentation" %} class="active"{% endif %}>
+                                <a href="{{ contest_url("documentation") }}">{% trans %}Documentation{% endtrans %}</a>
+                            </li>
+    {% if actual_phase == 0 or participation.unrestricted %}{# FIXME maybe >= 0? #}
+        {% if testing_enabled %}
+                            <li{% if page == "testing" %} class="active"{% endif %}>
+                                <a href="{{ contest_url("testing") }}">{% trans %}Testing{% endtrans %}</a>
+                            </li>
+        {% endif %}
+        {% if printing_enabled %}
+                            <li{% if page == "printing" %} class="active"{% endif %}>
+                                <a href="{{ contest_url("printing") }}">{% trans %}Printing{% endtrans %}</a>
+                            </li>
+        {% endif %}
+    {% endif %}
+                        </ul>
+                    </div>
+                    <span class="license_notice">
+                    <a href="http://github.com/cms-dev/cms/" rel="author noreferrer" target="_blank">{% trans %}Contest Management System{% endtrans %}</a>
+                    {% trans %}is released under the{% endtrans %}
+                    <a href="http://www.gnu.org/licenses/agpl" rel="license noreferrer" target="_blank">{% trans %}GNU Affero General Public License{% endtrans %}</a>
+                    .
+                    </span>
+                </div>
+    {% block core %}{% endblock core %}
+            </div>
+        </div>
+
+{% endif %}
+{% endblock body %}

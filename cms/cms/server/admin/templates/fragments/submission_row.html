@@ -1,0 +1,121 @@
+{# This snippet shows a row of a submission table using the variable s as input #}
+
+{% if shown_dataset is defined %}
+  {% set dataset = shown_dataset %}
+{% else %}
+  {% set dataset = s.task.active_dataset %}
+{% endif %}
+
+{% set sr = s.get_result(dataset) %}
+
+{# The submission result might be missing in some cases (e.g., cloned dataset); these cases are equivalent to the compiling state. #}
+{% set status = SubmissionResult.COMPILING %}
+{% if sr is not none %}
+  {% set status = sr.get_status() %}
+{% endif %}
+{% set score_type = get_score_type(dataset=dataset) %}
+<tr>
+  <td><a href="{{ url("submission", s.id) }}">{{ s.timestamp }}</a></td>
+  <td><a href="{{ url("contest", s.participation.contest.id, "user", s.participation.user.id, "edit") }}">{{ s.participation.user.username }}</a></td>
+  <td><a href="{{ url("task", s.task.id) }}">{{ s.task.name }}</a></td>
+  <td>
+    {% if status == SubmissionResult.COMPILING %}
+    Compiling...
+    {% else %}
+    <div id="title_evaluation_{{ s.id }}" class="toggling_off">
+
+      {% if status == SubmissionResult.COMPILATION_FAILED %}
+      Compilation failed
+      <div id="evaluation_{{ s.id }}" style="display: none;">
+
+      {% elif status == SubmissionResult.EVALUATING %}
+      Evaluating...
+      <div id="evaluation_{{ s.id }}" style="display: none;">
+
+      {% elif status == SubmissionResult.SCORING %}
+      Scoring...
+      <div id="evaluation_{{ s.id }}" style="display: none;">
+        {% if sr.evaluated() %}
+        <h3>Testcases</h3>
+        <table class="nested bordered">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Codename</th>
+              <th>Outcome</th>
+              <th>Visible</th>
+              <th>Details</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for ev in sr.evaluations|sort(attribute="codename") %}
+            <tr>
+              <td>{{ loop.index }}</td>
+              <td>{{ ev.codename }}</td>
+              <td>{{ ev.outcome }}</td>
+              <td style="text-align: center">
+                <input type="checkbox" disabled{{ " checked" if s.token is not none or ev.testcase.public else "" }}>
+              </td>
+              <td>{{ ev.text|format_status_text }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        {% endif %}
+
+      {% elif status == SubmissionResult.SCORED %}
+        {% if score_type is defined %}
+          {% set max_score = score_type.max_score %}
+        {% else %}
+          {% set max_score = "[Cannot get score type - see logs]" %}
+        {% endif %}
+      Scored ({{ sr.score }} / {{ max_score }})
+      <div id="evaluation_{{ s.id }}" class="score_details" style="display: none;">
+        {% if score_type is defined %}
+          {{ score_type.get_html_details(sr.score_details, FEEDBACK_LEVEL_FULL)|safe }}
+        {% else %}
+        [Cannot get score type - see logs]
+        {% endif %}
+
+      {% else %}
+      [Unknown status]
+      <div id="evaluation_{{ s.id }}" style="display: none;">
+
+      {% endif %}
+        <h3>Compilation output</h3>{# TODO: trim long outputs and add facility to see raw #}
+        <pre>{% if sr.compilation_text|length > 0 %}{{ sr.compilation_text|format_status_text }}{% endif %}</pre>
+      </div>
+    </div>
+
+    {% endif %}
+  </td>
+  <td>
+    {% for filename, sub_file in s.files|dictsort(by="key") %}
+      {% set real_filename = filename if s.language is none else filename|replace(".%l", (s.language|to_language).source_extension) %}
+    <a href="javascript:void(0);" onclick="utils.show_file('{{ real_filename }}','{{ url("submission_file", sub_file.id) }}')">{{ real_filename }}</a><br/>
+    {% endfor %}
+  </td>
+  <td>
+    {% if s.token is none %}
+    No
+    {% else %}
+    Yes
+    {% endif %}
+  </td>
+  <td>
+    {% if s.official %}
+    Yes
+    {% else %}
+    No
+    {% endif %}
+  </td>
+  <td>
+    {{ s.short_comment }}
+  </td>
+  <td>
+    {{ ReevaluationButtons(
+           url("submission", s.id, dataset.id),
+           submission_id=s.id,
+           dataset_id=dataset.id) }}
+  </td>
+</tr>

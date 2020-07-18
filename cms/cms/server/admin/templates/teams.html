@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block core %}
+
+<div class="core_title">
+  <h1>Teams list</h1>
+</div>
+
+<div id="details">
+  <table class="bordered">
+    <thead>
+      <tr>
+        <th>Code</th>
+        <th>Name</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for t in team_list|sort(attribute="code") %}
+      <tr>
+        <td><a href="{{ url("team", t.id) }}">{{ t.code }}</a></td>
+        <td>{{ t.name }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+{% endblock core %}

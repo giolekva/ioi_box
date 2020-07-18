@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block js %}
+
+{% endblock js %}
+
+{% block core %}
+<div class="core_title">
+  <h1>New contest</h1>
+</div>
+
+<!-- We use "multipart/form-data" to have Tornado distinguish between missing and empty values. -->
+<form enctype="multipart/form-data" action="{{ url("contests", "add") }}" method="POST" name="add_contest">
+  {{ xsrf_form_html|safe }}
+  <span class="info" title="A short name for the contest, preferably using only letters, numbers and underscores."></span>
+  Name:
+  <input type="text" name="name">
+
+  <input type="submit">
+</form>
+
+{% endblock core %}

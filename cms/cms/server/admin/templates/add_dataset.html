@@ -1,0 +1,141 @@
+{% extends "base.html" %}
+
+{% block js_init %}
+
+function showTaskTypeOption() {
+    var selector = $("select[name=task_type]")[0];
+    $(".TaskTypeOptions:visible").hide("fast");
+    $("#TaskType" + selector.options[selector.selectedIndex].value + "Options").show("fast")
+};
+
+showTaskTypeOption();
+$("select[name=task_type]").change(showTaskTypeOption);
+
+{% endblock js_init %}
+
+{% block core %}
+
+<div class="core_title">
+  <h1><a href="{{ url("task", task.id) }}">{{ task.title }} ({{ task.name }})</a> - Create dataset</h1>
+</div>
+
+{% if original_dataset is none %}
+<form enctype="multipart/form-data" action="{{ url("task", task.id, "add_dataset") }}" method="POST">
+{% else %}
+You are cloning the dataset "{{ original_dataset.description }}".
+<form enctype="multipart/form-data" action="{{ url("dataset", clone_id, "clone") }}" method="POST">
+{% endif %}
+  {{ xsrf_form_html|safe }}
+  <table>
+    <tr><td colspan=2><h2>Dataset information</h2></td></tr>
+    <tr>
+      <td>
+        <span class="info" title="A (unique) description for this dataset."></span>
+        Description
+      </td>
+      <td>
+        <input type="text" name="description" value="{{ default_description }}"/>
+      </td>
+    </tr>
+    {% if original_dataset is not none %}
+    <tr>
+      <td>
+        <span class="info" title="Whether to copy over the evaluations from the original dataset."></span>
+        Clone evaluation results
+      </td>
+      <td>
+        <input type="checkbox" name="clone_results"/>
+      </td>
+    </tr>
+    {% endif %}
+
+    <tr><td colspan=2><h2>Limits</h2></td></tr>
+    <tr>
+      <td>
+        <span class="info" title="Total maximum time for each evaluation, in seconds."></span>
+        Time limit
+      </td>
+      <td><input type="text" name="time_limit" value="{{ 1 if original_dataset is none else original_dataset.time_limit or "" }}"/> second(s)</td>
+    </tr>
+    <tr>
+      <td>
+        <span class="info" title="Total maximum memory usage for each evaluation, in MiB (2^20 bytes)."></span>
+        Memory limit
+      </td>
+      <td><input type="text" name="memory_limit" value="{{ 512 if original_dataset is none else original_dataset.memory_limit or "" }}"/> MiB</td>
+    </tr>
+
+    <tr><td colspan=2><h2>Task type settings (<a href="http://cms.readthedocs.org/en/{{ rtd_version }}/Task%20types.html" target="_blank">documentation</a>)</h2></td></tr>
+    <tr>
+      <td>
+        <span class="info" title="Please see the task type documentation."></span>
+        Task type
+      </td>
+      <td>
+
+        <select name="task_type">
+          {% for task_type_name, task_type in iteritems(TASK_TYPES) %}
+          <option value="{{ task_type_name }}"{% if original_dataset is not none and task_type_name == original_dataset.task_type %} selected{% endif %}>{{ task_type_name }}</option>
+          {% endfor %}
+        </select>
+
+        {% for task_type_name, task_type in iteritems(TASK_TYPES) %}
+        <table class="TaskTypeOptions bordered" id="TaskType{{ task_type_name }}Options" style="display: none;">
+          {% if original_dataset is not none and task_type_name == original_dataset.task_type %}
+            {% set values = original_dataset_task_type_parameters %}
+          {% else %}
+            {% set values = none %}
+          {% endif %}
+          {% for i in range(task_type.ACCEPTED_PARAMETERS|length) %}
+            {% set param_def = task_type.ACCEPTED_PARAMETERS[i] %}
+            {% set val = values[i] if values is not none else none %}
+          <tr>
+            <td>{{ param_def.name }}</td>
+            <td>
+              {{ param_def.render("TaskTypeOptions_%s_"|format(task_type_name), previous_value=val)|safe }}
+            </td>
+          </tr>
+          {% endfor %}
+        </table>
+        {% endfor %}
+
+
+      </td>
+    </tr>
+
+    {% if original_dataset is not none and original_dataset.managers|length != 0 %}
+    <tr>
+      <td>
+        <span class="info" title="Whether to copy the managers from the original dataset."></span>
+        Clone managers
+      </td>
+      <td><input type="checkbox" name="clone_managers" checked/></td>
+    </tr>
+    {% endif %}
+
+    <tr><td colspan=2><h2>Score type settings (<a href="http://cms.readthedocs.org/en/{{ rtd_version }}/Score%20types.html" target="_blank">documentation</a>)</h2></td></tr>
+    <tr>
+      <td>
+        <span class="info" title="Please see the score type documentation."></span>
+        Score Type
+      </td>
+      <td>
+        <select name="score_type">
+          {% for score_type_name, score_type in iteritems(SCORE_TYPES) %}
+          <option value="{{ score_type_name }}"{% if original_dataset is not none and score_type_name == original_dataset.score_type %} selected{% endif %}>{{ score_type_name }}</option>
+          {% endfor %}
+        </select>
+
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <span class="info" title="Please see the score type documentation."></span>
+        Score Parameters
+      </td>
+      <td><textarea name="score_type_parameters">{{ original_dataset.score_type_parameters|tojson|forceescape if original_dataset is not none else "" }}</textarea></td>
+    </tr>
+  </table>
+<input type="submit" value="Create"/>
+</form>
+{% endblock core %}

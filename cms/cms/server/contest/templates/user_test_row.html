@@ -1,0 +1,99 @@
+{% set status = tr.get_status() if tr is defined else UserTestResult.COMPILING %}
+<tr data-user-test="{{ t_idx }}" data-status="{{ status }}">
+{% if show_date %}
+    <td class="datetime">{{ t.timestamp|format_datetime }}</td>
+{% else %}
+    <td class="time">{{ t.timestamp|format_time }}</td>
+{% endif %}
+    <td class="status">
+{% if status == UserTestResult.COMPILING %}
+        {% trans %}Compiling...{% endtrans %}
+{% elif status == UserTestResult.COMPILATION_FAILED %}
+        {% trans %}Compilation failed{% endtrans %}
+        <a class="details">{% trans %}details{% endtrans %}</a>
+{% elif status == UserTestResult.EVALUATING %}
+        {% trans %}Executing...{% endtrans %}
+{% elif status == UserTestResult.EVALUATED %}
+        {% trans %}Executed{% endtrans %}
+        <a class="details">{% trans %}details{% endtrans %}</a>
+{% endif %}
+    </td>
+{% if tr is undefined or tr.execution_time is none %}
+    <td class="time undefined">
+        {% trans %}N/A{% endtrans %}
+    </td>
+{% else %}
+    <td class="time">
+        {{ tr.execution_time|format_duration }}
+    </td>
+{% endif %}
+{% if tr is undefined or tr.execution_memory is none %}
+    <td class="memory undefined">
+        {% trans %}N/A{% endtrans %}
+    </td>
+{% else %}
+    <td class="memory">
+        {{ tr.execution_memory|format_size }}
+    </td>
+{% endif %}
+    <td class="input">
+        <a class="btn" href="{{ contest_url("tasks", task.name, "tests", t_idx, "input") }}">
+            {% trans %}Download{% endtrans %}
+        </a>
+    </td>
+    <td class="output">
+    {% if status == UserTestResult.COMPILING or status == UserTestResult.EVALUATING %}
+        <a class="btn btn-primary disabled">
+            {% trans %}Wait...{% endtrans %}
+        </a>
+    {% else %}
+        {% if tr.output is none %}
+        <a class="btn btn-primary disabled">
+            {% trans %}N/A{% endtrans %}
+        </a>
+        {% else %}
+        <a class="btn btn-primary" href="{{ contest_url("tasks", task.name, "tests", t_idx, "output") }}">
+            {% trans %}Download{% endtrans %}
+        </a>
+        {% endif %}
+    {% endif %}
+    </td>
+    <td class="files">
+        {# We replace '.%l' with the actual language only when it occurs as an extension at the end of the string and only when #}
+        {# there isn't another file with that name. This allows to securily reverse the replacement and should work great in #}
+        {# the common case. Yet, it still allows the marginal case of both 'foo.%l' and 'foo.c' in the submission format. #}
+        {% set files = iterkeys(t.files)|list + iterkeys(t.managers)|list %}
+        {% if files|length == 0 %}
+        <a class="btn disabled">
+            {% trans %}None{% endtrans %}
+        </a>
+        {% elif files|length == 1 %}
+            {% set filename = next(iterkeys(t.files)) %}
+            {% set real_filename = filename|replace(".%l", (t.language|to_language).source_extension) %}
+        <a class="btn" href="{{ contest_url("tasks", task.name, "tests", t_idx, "files", real_filename) }}">
+            {% trans %}Download{% endtrans %}
+        </a>
+        {% else %}
+        <div class="btn-group">
+            <a class="btn dropdown-toggle" data-toggle="dropdown">
+                {% trans %}Download{% endtrans %}
+                <span class="caret"></span>
+            </a>
+            <ul class="dropdown-menu">
+            {% for filename in files %}
+                {% if t.language is not none %}
+                    {% set real_filename = filename|replace(".%l", (t.language|to_language).source_extension) %}
+                {% else %}
+                    {% set real_filename = filename %}
+                {% endif %}
+                <li>
+                    <a href="{{ contest_url("tasks", task.name, "tests", t_idx, "files", filename) }}">
+                        {{ real_filename }}
+                    </a>
+                </li>
+            {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+    </td>
+</tr>
