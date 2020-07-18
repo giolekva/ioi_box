@@ -1,33 +1,214 @@
+---
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: cms
+  name: log-service
   namespace: cms
+  labels:
+    ejoi-role: data
 spec:
   selector:
     matchLabels:
-      app: cms
-  serviceName: "cms"
+      app: log-service
   replicas: 1
+  serviceName: log-service-headless
   template:
     metadata:
       labels:
-        app: cms
+        app: log-service
     spec:
       containers:
       - name: cms
         image: giolekva/ioi-cms:latest
-        volumeMounts:
-        - name: logs
-          mountPath: /var/local/log/cms
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 29000
+        command: ["cmsLogService"]
+        args: ["0"]
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: scoring-service
+  namespace: cms
+  labels:
+    ejoi-role: data
+spec:
+  selector:
+    matchLabels:
+      app: scoring-service
+  replicas: 1
+  serviceName: scoring-service-headless
+  template:
+    metadata:
+      labels:
+        app: scoring-service
+    spec:
+      containers:
+      - name: cms
+        image: giolekva/ioi-cms:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 28500
+        command: ["cmsScoringService"]
+        args: ["0"]
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: checker
+  namespace: cms
+  labels:
+    ejoi-role: data
+spec:
+  selector:
+    matchLabels:
+      app: checker
+  replicas: 1
+  serviceName: checker-headless
+  template:
+    metadata:
+      labels:
+        app: checker
+    spec:
+      containers:
+      - name: cms
+        image: giolekva/ioi-cms:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 22000
+        command: ["cmsChecker"]
+        args: ["0"]
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: evaluation-service
+  namespace: cms
+  labels:
+    ejoi-role: data
+spec:
+  selector:
+    matchLabels:
+      app: evaluation-service
+  replicas: 1
+  serviceName: evaluation-service-headless
+  template:
+    metadata:
+      labels:
+        app: evaluation-service
+    spec:
+      containers:
+      - name: cms
+        image: giolekva/ioi-cms:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 25000
+        command: ["cmsEvaluationService"]
+        args: ["0"]
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: admin-web-server
+  namespace: cms
+  labels:
+    ejoi-role: data
+spec:
+  selector:
+    matchLabels:
+      app: admin-web-server
+  replicas: 1
+  serviceName: admin-web-server-headless
+  template:
+    metadata:
+      labels:
+        app: admin-web-server
+    spec:
+      containers:
+      - name: cms
+        image: giolekva/ioi-cms:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8889
+        - containerPort: 21100
+        command: ["cmsAdminWebServer"]
+        args: ["0"]
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: contest-web-server
+  namespace: cms
+  labels:
+    ejoi-role: data
+spec:
+  selector:
+    matchLabels:
+      app: contest-web-server
+  serviceName: contest-web-server
+  replicas: 3
+  template:
+    metadata:
+      labels:
+        app: contest-web-server
+    spec:
+      containers:
+      - name: cms
+        image: giolekva/ioi-cms:latest
+        imagePullPolicy: Always
+        env:
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        ports:
+        - containerPort: 8888
+        - containerPort: 21000
+        command: ["/bin/sh", "-c"]
+        args: ["export INDEX=${POD_NAME#contest-web-server-} && cmsContestWebServer -c=1 $INDEX"]
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: tester
+  namespace: cms
+  labels:
+    ejoi-role: tester
+spec:
+  selector:
+    matchLabels:
+      app: tester
+  serviceName: tester-headless
+  replicas: 12
+  template:
+    metadata:
+      labels:
+        app: tester
+    spec:
+      containers:
+      - name: cms
+        image: giolekva/ioi-cms:latest
+        imagePullPolicy: Always
+        resources:
+          requests:
+            cpu: "1000m"
+          limits:
+            cpu: "1000m"
+        env:
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        ports:
+        - containerPort: 8888
+        - containerPort: 26000
         securityContext:
           privileged: true
-  volumeClaimTemplates:
-  - metadata:
-      name: logs
-    spec:
-      accessModes: [ "ReadWriteOnce" ]
-      storageClassName: "local-path"
-      resources:
-        requests:
-          storage: 1Gi
+        command: ["/bin/sh", "-c"]
+        args: ["export INDEX=${POD_NAME#tester-} && cmsWorker $INDEX"]
+      tolerations:
+      - key: "key"
+        operator: "Equal"
+        value: "value"
+        effect: "NoSchedule"

@@ -2,16 +2,107 @@
 apiVersion: v1
 kind: Service 
 metadata:
-  name: web
+  name: admin-web
   namespace: cms
 spec:
   type: LoadBalancer
   selector:
-    app: cms
+    app: admin-web-server
+  ports:
+    - name: web
+      port: 81
+      targetPort: 8889
+---
+apiVersion: v1
+kind: Service 
+metadata:
+  name: contest-web
+  namespace: cms
+spec:
+  type: LoadBalancer
+  selector:
+    app: contest-web-server
   ports:
     - name: web
       port: 80
       targetPort: 8888
-    - name: admin
-      port: 81
-      targetPort: 8889
+    - name: service
+      port: 21000
+---
+apiVersion: v1
+kind: Service 
+metadata:
+  name: tester-headless
+  namespace: cms
+spec:
+  clusterIP: None
+  selector:
+    app: tester
+  ports:
+    - name: service
+      port: 26000
+---
+apiVersion: v1
+kind: Service 
+metadata:
+  name: log-service-headless
+  namespace: cms
+spec:
+  clusterIP: None
+  selector:
+    app: log-service
+  ports:
+    - name: service
+      port: 29000
+---
+apiVersion: v1
+kind: Service 
+metadata:
+  name: scoring-service-headless
+  namespace: cms
+spec:
+  clusterIP: None
+  selector:
+    app: scoring-service
+  ports:
+    - name: service
+      port: 28500
+---
+apiVersion: v1
+kind: Service 
+metadata:
+  name: checker-headless
+  namespace: cms
+spec:
+  clusterIP: None
+  selector:
+    app: checker
+  ports:
+    - name: service
+      port: 22000
+---
+apiVersion: v1
+kind: Service 
+metadata:
+  name: evaluation-service-headless
+  namespace: cms
+spec:
+  clusterIP: None
+  selector:
+    app: evaluation-service
+  ports:
+    - name: service
+      port: 25000
+---
+apiVersion: v1
+kind: Service 
+metadata:
+  name: admin-web-server-headless
+  namespace: cms
+spec:
+  clusterIP: None
+  selector:
+    app: admin-web-server
+  ports:
+    - name: service
+      port: 21100
