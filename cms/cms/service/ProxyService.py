@@ -240,7 +240,7 @@ class ProxyService(TriggeredService):
 
     """
 
-    def __init__(self, shard, contest_id):
+    def __init__(self, shard, contest_id, listen_on_address=None):
         """Start the service with the given parameters.
 
         Create an instance of the ProxyService and make it listen on
@@ -254,7 +254,7 @@ class ProxyService(TriggeredService):
         contest_id (int): the ID of the contest to manage.
 
         """
-        super(ProxyService, self).__init__(shard)
+        super(ProxyService, self).__init__(shard, listen_on_address)
 
         self.contest_id = contest_id
 

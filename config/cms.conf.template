@@ -23,8 +23,11 @@
         "ScoringService":    [["localhost", 28500]],
         "Checker":           [["localhost", 22000]],
         "EvaluationService": [["localhost", 25000]],
-        "Worker":            [["localhost", 26000], ["localhost", 26001]],
-        "ContestWebServer":  [["localhost", 21000]],
+        "Worker":            [["localhost", 26000],
+	                      ["localhost", 26001]],
+        "ContestWebServer":  [["localhost", 21000],
+	                      ["localhost", 21000],
+			      ["localhost", 21000]],
         "AdminWebServer":    [["localhost", 21100]],
         "ProxyService":      [["localhost", 28600]],
         "PrintingService":   []
@@ -40,7 +43,7 @@
     "_section": "Database",
 
     "_help": "Connection string for the database.",
-    "database": "postgresql+psycopg2://POSTGRES_USER:POSTGRES_PASSWORD@db-pgpool.cms.svc:5432/POSTGRES_DB",
+    "database": "postgresql+psycopg2://POSTGRES_USER:POSTGRES_PASSWORD@db-pgpool.db.svc:5432/POSTGRES_DB",
 
     "_help": "Whether SQLAlchemy prints DB queries on stdout.",
     "database_debug": false,
@@ -89,8 +92,8 @@
     "_help": "in core_services. If you access them through a proxy (acting",
     "_help": "as a load balancer) running on the same host you could put",
     "_help": "127.0.0.1 here for additional security.",
-    "contest_listen_address": [""],
-    "contest_listen_port":    [8888],
+    "contest_listen_address": ["", "", ""],
+    "contest_listen_port":    [8888, 8888, 8888],
 
     "_help": "Login cookie duration in seconds. The duration is refreshed",
     "_help": "on every manual request.",

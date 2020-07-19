@@ -29,6 +29,31 @@ spec:
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
+  name: proxy-service
+  namespace: cms
+spec:
+  selector:
+    matchLabels:
+      app: proxy-service
+  replicas: 1
+  serviceName: proxy-service-headless
+  template:
+    metadata:
+      labels:
+        app: proxy-service
+    spec:
+      containers:
+      - name: cms
+        image: giolekva/ioi-cms:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 28600
+        command: ["/bin/sh", "-c"]
+        args: ["export INDEX=${POD_NAME#contest-web-server-} && cmsProxyService -c=1 $INDEX"]
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
   name: scoring-service
   namespace: cms
   labels:

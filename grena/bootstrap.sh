@@ -89,11 +89,11 @@ set -e
 # ./kubectl label node n06 ejoi-role=tester
 # ./kubectl taint nodes n04 key=value:NoSchedule
 # ./kubectl taint nodes n05 key=value:NoSchedule
-./kubectl taint nodes n06 key=value:NoSchedule
+# ./kubectl taint nodes n06 key=value:NoSchedule
 
-echo "---- Installing longhorn"
-./kubectl create namespace longhorn-system
-helm install longhorn ./longhorn/chart/ --namespace longhorn-system
+# echo "---- Installing longhorn"
+# ./kubectl create namespace longhorn-system
+# helm install longhorn ./longhorn/chart/ --namespace longhorn-system
 
 # TODO: templetize db-creds.yaml
 POSTGRES_USER=cmsuser
@@ -101,17 +101,17 @@ POSTGRES_PASSWORD=cmsuser
 POSTGRES_DB=cmsdb
 
 echo "---- INSTALLING postgresql"
-./kubectl create namespace db
-helm install --namespace=db postgres bitnami/postgresql-ha \
-     --set global.storageClass=longhorn \
-     --set global.postgresql.username=${POSTGRES_USER} \
-     --set global.postgresql.password=${POSTGRES_PASSWORD} \
-     --set global.postgresql.database=${POSTGRES_DB} \
-     --set fullnameOverride=db \
-     --set postgresql.replicaCount=1 \
-     --set persistence.size=5Gi \
-     --set postgresql.nodeSelector."ejoi-role"=data \
-     --set pgpool.nodeSelector."ejoi-role"=data 
+# ./kubectl create namespace db
+# helm install --namespace=db postgres bitnami/postgresql-ha \
+#      --set global.storageClass=longhorn \
+#      --set global.postgresql.username=${POSTGRES_USER} \
+#      --set global.postgresql.password=${POSTGRES_PASSWORD} \
+#      --set global.postgresql.database=${POSTGRES_DB} \
+#      --set fullnameOverride=db \
+#      --set postgresql.replicaCount=1 \
+#      --set persistence.size=5G
+#      # --set postgresql.nodeSelector."ejoi-role"=data \
+#      # --set pgpool.nodeSelector."ejoi-role"=data 
 
 
 # echo "---- Generating CMS configuration"
@@ -133,7 +133,7 @@ helm install --namespace=db postgres bitnami/postgresql-ha \
 
 
 echo "---- Installing CMS"
-./kubectl create namespace cms
+# ./kubectl create namespace cms
 ./kubectl apply -f ../k8s/db-creds.yaml
 ./kubectl apply -f ../k8s/db-init.yaml
 ./kubectl apply -f ../k8s/cms.yaml
