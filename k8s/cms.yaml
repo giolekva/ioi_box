@@ -4,8 +4,6 @@ kind: StatefulSet
 metadata:
   name: log-service
   namespace: cms
-  labels:
-    ejoi-role: data
 spec:
   selector:
     matchLabels:
@@ -25,6 +23,11 @@ spec:
         - containerPort: 29000
         command: ["cmsLogService"]
         args: ["0"]
+        livenessProbe:
+          tcpSocket:
+            port: 29000
+          initialDelaySeconds: 15
+          periodSeconds: 5
 ---
 apiVersion: apps/v1
 kind: StatefulSet
@@ -50,14 +53,17 @@ spec:
         - containerPort: 28600
         command: ["/bin/sh", "-c"]
         args: ["export INDEX=${POD_NAME#contest-web-server-} && cmsProxyService -c=1 $INDEX"]
+        livenessProbe:
+          tcpSocket:
+            port: 28600
+          initialDelaySeconds: 15
+          periodSeconds: 5
 ---
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: scoring-service
   namespace: cms
-  labels:
-    ejoi-role: data
 spec:
   selector:
     matchLabels:
@@ -77,14 +83,17 @@ spec:
         - containerPort: 28500
         command: ["cmsScoringService"]
         args: ["0"]
+        livenessProbe:
+          tcpSocket:
+            port: 28500
+          initialDelaySeconds: 15
+          periodSeconds: 5
 ---
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: checker
   namespace: cms
-  labels:
-    ejoi-role: data
 spec:
   selector:
     matchLabels:
@@ -104,14 +113,17 @@ spec:
         - containerPort: 22000
         command: ["cmsChecker"]
         args: ["0"]
+        livenessProbe:
+          tcpSocket:
+            port: 22000
+          initialDelaySeconds: 15
+          periodSeconds: 5
 ---
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: evaluation-service
   namespace: cms
-  labels:
-    ejoi-role: data
 spec:
   selector:
     matchLabels:
@@ -131,14 +143,17 @@ spec:
         - containerPort: 25000
         command: ["cmsEvaluationService"]
         args: ["0"]
+        livenessProbe:
+          tcpSocket:
+            port: 25000
+          initialDelaySeconds: 15
+          periodSeconds: 5
 ---
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: admin-web-server
   namespace: cms
-  labels:
-    ejoi-role: data
 spec:
   selector:
     matchLabels:
@@ -159,14 +174,17 @@ spec:
         - containerPort: 21100
         command: ["cmsAdminWebServer"]
         args: ["0"]
+        livenessProbe:
+          tcpSocket:
+            port: 21100
+          initialDelaySeconds: 15
+          periodSeconds: 5
 ---
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: contest-web-server
   namespace: cms
-  labels:
-    ejoi-role: data
 spec:
   selector:
     matchLabels:
@@ -192,14 +210,17 @@ spec:
         - containerPort: 21000
         command: ["/bin/sh", "-c"]
         args: ["export INDEX=${POD_NAME#contest-web-server-} && cmsContestWebServer -c=1 $INDEX"]
+        livenessProbe:
+          tcpSocket:
+            port: 21000
+          initialDelaySeconds: 15
+          periodSeconds: 5
 ---
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: tester
   namespace: cms
-  labels:
-    ejoi-role: tester
 spec:
   selector:
     matchLabels:
@@ -211,6 +232,14 @@ spec:
       labels:
         app: tester
     spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: ejoi-role
+                operator: In
+                values: ["tester"]
       containers:
       - name: cms
         image: giolekva/ioi-cms:latest
@@ -232,6 +261,11 @@ spec:
           privileged: true
         command: ["/bin/sh", "-c"]
         args: ["export INDEX=${POD_NAME#tester-} && cmsWorker $INDEX"]
+        livenessProbe:
+          tcpSocket:
+            port: 26000
+          initialDelaySeconds: 15
+          periodSeconds: 5
       tolerations:
       - key: "key"
         operator: "Equal"
