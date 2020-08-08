@@ -1,0 +1,35 @@
+#### vi /etc/sysctl.conf
+kernel.randomize_va_space = 0
+
+##### vi /etc/rc.local
+#!/bin/bash
+
+echo never > /sys/kernel/mm/transparent_hugepage/enabled
+echo never > /sys/kernel/mm/transparent_hugepage/defrag
+echo 0 > /sys/kernel/mm/transparent_hugepage/khugepaged/defrag
+
+exit 0
+
+#### chmod +x /etc/rc.local
+
+#### vi /etc/systemd/system/rc-local.service
+[Unit]
+ Description=/etc/rc.local Compatibility
+ ConditionPathExists=/etc/rc.local
+
+[Service]
+ Type=forking
+ ExecStart=/etc/rc.local start
+ TimeoutSec=0
+ StandardOutput=tty
+ RemainAfterExit=yes
+ SysVStartPriority=99
+
+[Install]
+ WantedBy=multi-user.target
+
+#### systemctl start rc-local.service
+#### systemctl status rc-local.service
+
+#### shutdown -r now
+#### curl -sLS https://raw.githubusercontent.com/ioi/isolate/c679ae936d8e8d64e5dab553bdf1b22261324315/isolate-check-environment | sh
