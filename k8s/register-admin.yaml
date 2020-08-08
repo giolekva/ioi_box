@@ -1,0 +1,19 @@
+# ADMIN_USER=foo ADMIN_PASSWORD=bar envsubst < ../k8s/register-admin.yaml | kubectl apply -f -
+kind: Pod
+apiVersion: v1
+metadata:
+  name: register-admin
+  namespace: cms
+spec:
+  containers:
+  - name: db-init
+    image: giolekva/ioi-cms:latest
+    imagePullPolicy: Always
+    env:
+    - name: ADMIN_USER
+      value: SET_ADMIN_USER_HERE
+    - name: ADMIN_PASSWORD
+      value: SET_ADMIN_PASSWORD_HERE
+    command: ["/bin/sh"]
+    args: ["-c", "cmsAddAdmin -p $ADMIN_PASSWORD $ADMIN_USER"]
+  restartPolicy: Never

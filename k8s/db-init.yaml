@@ -9,5 +9,5 @@ spec:
     image: giolekva/ioi-cms:latest
     imagePullPolicy: Always
     command: ["/bin/sh"]
-    args: ["-c", "/scripts/cms_init.sh"]
+    args: ["-c", "cmsInitDB"]
   restartPolicy: Never
