@@ -1,0 +1,20 @@
+kind: Pod
+apiVersion: v1
+metadata:
+  name: delete-users
+  namespace: cms
+spec:
+  containers:
+  - name: users
+    image: giolekva/ioi-cms:latest
+    imagePullPolicy: Always
+    volumeMounts:
+    - name: contestants-file
+      mountPath: /contestants
+    command: ["/bin/sh"]
+    args: ["-c", "/scripts/delete-users.sh /contestants/$USERS_FILE"]
+  volumes:
+  - name: contestants-file
+    configMap:
+      name: contestants
+  restartPolicy: Never
