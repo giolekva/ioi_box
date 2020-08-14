@@ -1,0 +1,20 @@
+kind: Pod
+apiVersion: v1
+metadata:
+  name: add-participation
+  namespace: cms
+spec:
+  containers:
+  - name: participation
+    image: giolekva/ioi-cms:latest
+    imagePullPolicy: Always
+    volumeMounts:
+    - name: participation-file
+      mountPath: /participation
+    command: ["/bin/sh"]
+    args: ["-c", "/scripts/add-participation.sh /participation/$PARTICIPATION_FILE"]
+  volumes:
+  - name: participation-file
+    configMap:
+      name: participation
+  restartPolicy: Never
