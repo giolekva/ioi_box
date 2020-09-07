@@ -27,7 +27,7 @@ Chair of Host Technical Committee
 '''
 
 SENDER_ADDRESS = 'giolekva@gmail.com'
-SENDER_PASS = 'yppaokfvmlfgbqyd'
+SENDER_PASS = ''
 
 
 class User:
