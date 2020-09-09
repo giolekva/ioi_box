@@ -1,7 +1,7 @@
 #!/bin/bash
 
 yes | python3 /cms/cmscontrib/ExportSubmissions.py \
-	      -c=7 \
+	      -c=13 \
 	      --filename "{task}.{user}.{id}.{file}{ext}" \
 	      "/tmp/submissions"
 
