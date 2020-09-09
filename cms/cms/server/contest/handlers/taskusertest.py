@@ -86,7 +86,7 @@ class UserTestInterfaceHandler(ContestHandler):
                 get_submission_count(self.sql_session, participation,
                                      contest=self.contest, cls=UserTest)
             user_tests_left_contest = \
-                self.contest.max_user_test_number - user_test_c
+                self.contest.max_user_test_number - user_test_c - 1
 
         for task in self.contest.tasks:
             if self.get_argument("task_name", None) == task.name:
@@ -98,7 +98,7 @@ class UserTestInterfaceHandler(ContestHandler):
             user_tests_left_task = None
             if task.max_user_test_number is not None:
                 user_tests_left_task = \
-                    task.max_user_test_number - len(user_tests[task.id])
+                    task.max_user_test_number - len(user_tests[task.id]) - 1
 
             user_tests_left[task.id] = user_tests_left_contest
             if user_tests_left_task is not None and \

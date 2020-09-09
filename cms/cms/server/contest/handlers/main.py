@@ -38,6 +38,7 @@ from future.builtins import *  # noqa
 import ipaddress
 import json
 import logging
+import time
 
 import tornado.web
 
@@ -103,9 +104,14 @@ class LoginHandler(ContestHandler):
                            self.request.remote_ip)
             return None
 
+        start = time.time()
         participation, cookie = validate_login(
             self.sql_session, self.contest, self.timestamp, username, password,
             ip_address)
+        end = time.time()
+        logger.info("@@@@@@@@@@@@@@@@@@@")
+        logger.info("@@@@@@@@@ %f @@@@@@@", end - start)
+        logger.info("@@@@@@@@@@@@@@@@@@@")        
 
         cookie_name = self.contest.name + "_login"
         if cookie is None:

@@ -37,6 +37,7 @@ import ipaddress
 import json
 import logging
 from datetime import timedelta
+import time
 
 from sqlalchemy.orm import contains_eager, joinedload
 
@@ -121,12 +122,17 @@ def validate_login(
         log_failed_attempt("password authentication not allowed")
         return None, None
 
+    start = time.time()
     participation = sql_session.query(Participation) \
         .join(Participation.user) \
         .options(contains_eager(Participation.user)) \
         .filter(Participation.contest == contest)\
         .filter(User.username == username)\
         .first()
+    end = time.time()
+    logger.info("####################")
+    logger.info("######### %f ########", end - start)
+    logger.info("####################")    
 
     if participation is None:
         log_failed_attempt("user not registered to contest")

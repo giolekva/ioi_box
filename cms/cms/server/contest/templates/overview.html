@@ -126,7 +126,7 @@
 
 {% if contest.max_user_test_number is not none %}
     <p>
-    {% trans user_tests=contest.max_user_test_number %}You can submit at most {{ user_tests }} user tests during this contest.{% endtrans %}
+    {% trans user_tests=contest.max_user_test_number-1 %}You can submit at most {{ user_tests }} user tests during this contest.{% endtrans %}
     </p>
 {% endif %}
 

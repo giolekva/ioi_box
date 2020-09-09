@@ -398,7 +398,8 @@ class ImageHandler(object):
         'png': 'image/png',
         'jpg': 'image/jpeg',
         'gif': 'image/gif',
-        'bmp': 'image/bmp'
+        'bmp': 'image/bmp',
+        'svg': 'image/svg+xml'
     }
 
     MIME_TO_EXT = dict((v, k) for k, v in iteritems(EXT_TO_MIME))

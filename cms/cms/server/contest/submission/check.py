@@ -126,7 +126,7 @@ def check_max_number(
         return True
     count = get_submission_count(
         sql_session, participation, contest=contest, task=task, cls=cls)
-    return count < max_number
+    return count < max_number - 1
 
 
 def get_latest_submission(
