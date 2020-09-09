@@ -32,6 +32,20 @@ spec:
 apiVersion: v1
 kind: Service 
 metadata:
+  name: cws
+  namespace: cms
+spec:
+  type: LoadBalancer
+  selector:
+    app: cws
+  ports:
+    - name: web
+      port: 8080
+      targetPort: 8888
+---
+apiVersion: v1
+kind: Service 
+metadata:
   name: tester-headless
   namespace: cms
 spec:
@@ -119,3 +133,17 @@ spec:
   ports:
     - name: service
       port: 21100
+---
+apiVersion: v1
+kind: Service 
+metadata:
+  name: rws
+  namespace: cms
+spec:
+  type: LoadBalancer
+  selector:
+    app: rws
+  ports:
+    - name: web
+      port: 8081
+      targetPort: 8890

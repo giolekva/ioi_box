@@ -15,14 +15,14 @@ spec:
       labels:
         app: log-service
     spec:
-      affinity:
-        nodeAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            nodeSelectorTerms:
-            - matchExpressions:
-              - key: ejoi-role
-                operator: In
-                values: ["back"]
+      # affinity:
+      #   nodeAffinity:
+      #     requiredDuringSchedulingIgnoredDuringExecution:
+      #       nodeSelectorTerms:
+      #       - matchExpressions:
+      #         - key: ejoi-role
+      #           operator: In
+      #           values: ["back", "front"]
       containers:
       - name: cms
         image: giolekva/ioi-cms:latest
@@ -53,14 +53,14 @@ spec:
       labels:
         app: proxy-service
     spec:
-      affinity:
-        nodeAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            nodeSelectorTerms:
-            - matchExpressions:
-              - key: ejoi-role
-                operator: In
-                values: ["back"]
+      # affinity:
+      #   nodeAffinity:
+      #     requiredDuringSchedulingIgnoredDuringExecution:
+      #       nodeSelectorTerms:
+      #       - matchExpressions:
+      #         - key: ejoi-role
+      #           operator: In
+      #           values: ["back", "front"]
       containers:
       - name: cms
         image: giolekva/ioi-cms:latest
@@ -68,7 +68,7 @@ spec:
         ports:
         - containerPort: 28600
         command: ["/bin/sh", "-c"]
-        args: ["cmsProxyService -c=1 0"]
+        args: ["cmsProxyService -c=10 0"]
         # livenessProbe:
         #   tcpSocket:
         #     port: 28600
@@ -91,14 +91,14 @@ spec:
       labels:
         app: scoring-service
     spec:
-      affinity:
-        nodeAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            nodeSelectorTerms:
-            - matchExpressions:
-              - key: ejoi-role
-                operator: In
-                values: ["back"]
+      # affinity:
+      #   nodeAffinity:
+      #     requiredDuringSchedulingIgnoredDuringExecution:
+      #       nodeSelectorTerms:
+      #       - matchExpressions:
+      #         - key: ejoi-role
+      #           operator: In
+      #           values: ["back", "front"]
       containers:
       - name: cms
         image: giolekva/ioi-cms:latest
@@ -117,43 +117,43 @@ spec:
         #   initialDelaySeconds: 15
         #   periodSeconds: 5
 ---
-apiVersion: apps/v1
-kind: StatefulSet
-metadata:
-  name: checker
-  namespace: cms
-spec:
-  selector:
-    matchLabels:
-      app: checker
-  replicas: 1
-  serviceName: checker-headless
-  template:
-    metadata:
-      labels:
-        app: checker
-    spec:
-      affinity:
-        nodeAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            nodeSelectorTerms:
-            - matchExpressions:
-              - key: ejoi-role
-                operator: In
-                values: ["back"]
-      containers:
-      - name: cms
-        image: giolekva/ioi-cms:latest
-        imagePullPolicy: Always
-        ports:
-        - containerPort: 22000
-        command: ["cmsChecker"]
-        args: ["0"]
-        # livenessProbe:
-        #   tcpSocket:
-        #     port: 22000
-        #   initialDelaySeconds: 15
-        #   periodSeconds: 5
+# apiVersion: apps/v1
+# kind: StatefulSet
+# metadata:
+#   name: checker
+#   namespace: cms
+# spec:
+#   selector:
+#     matchLabels:
+#       app: checker
+#   replicas: 1
+#   serviceName: checker-headless
+#   template:
+#     metadata:
+#       labels:
+#         app: checker
+#     spec:
+#       affinity:
+#         nodeAffinity:
+#           requiredDuringSchedulingIgnoredDuringExecution:
+#             nodeSelectorTerms:
+#             - matchExpressions:
+#               - key: ejoi-role
+#                 operator: In
+#                 values: ["back", "front"]
+#       containers:
+#       - name: cms
+#         image: giolekva/ioi-cms:latest
+#         imagePullPolicy: Always
+#         ports:
+#         - containerPort: 22000
+#         command: ["cmsChecker"]
+#         args: ["0"]
+#         # livenessProbe:
+#         #   tcpSocket:
+#         #     port: 22000
+#         #   initialDelaySeconds: 15
+#         #   periodSeconds: 5
 ---
 apiVersion: apps/v1
 kind: StatefulSet
@@ -171,17 +171,17 @@ spec:
       labels:
         app: evaluation-service
     spec:
-      affinity:
-        nodeAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            nodeSelectorTerms:
-            - matchExpressions:
-              - key: ejoi-role
-                operator: In
-                values: ["back"]
+      # affinity:
+      #   nodeAffinity:
+      #     requiredDuringSchedulingIgnoredDuringExecution:
+      #       nodeSelectorTerms:
+      #       - matchExpressions:
+      #         - key: ejoi-role
+      #           operator: In
+      #           values: ["back", "front"]
       containers:
       - name: cms
-        image: giolekva/ioi-cms:latest
+        image: giolekva/ioi-cms:tester
         imagePullPolicy: Always
         resources:
           requests:
@@ -213,14 +213,14 @@ spec:
       labels:
         app: admin-web-server
     spec:
-      affinity:
-        nodeAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            nodeSelectorTerms:
-            - matchExpressions:
-              - key: ejoi-role
-                operator: In
-                values: ["front"]
+      # affinity:
+      #   nodeAffinity:
+      #     requiredDuringSchedulingIgnoredDuringExecution:
+      #       nodeSelectorTerms:
+      #       - matchExpressions:
+      #         - key: ejoi-role
+      #           operator: In
+      #           values: ["front", "back"]
       containers:
       - name: cms
         image: giolekva/ioi-cms:latest
@@ -250,28 +250,28 @@ spec:
     matchLabels:
       app: contest-web-server
   serviceName: contest-web-server
-  replicas: 3
+  replicas: 10
   template:
     metadata:
       labels:
         app: contest-web-server
     spec:
-      affinity:
-        nodeAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            nodeSelectorTerms:
-            - matchExpressions:
-              - key: ejoi-role
-                operator: In
-                values: ["front"]
+      # affinity:
+      #   nodeAffinity:
+      #     requiredDuringSchedulingIgnoredDuringExecution:
+      #       nodeSelectorTerms:
+      #       - matchExpressions:
+      #         - key: ejoi-role
+      #           operator: In
+      #           values: ["front", "back"]
       containers:
       - name: cms
         image: giolekva/ioi-cms:latest
         imagePullPolicy: Always
         resources:
           requests:
-            cpu: "2000m"
-            memory: "4.1Gi"
+            cpu: "500m"
+            memory: "300Mi"
         env:
         - name: POD_NAME
           valueFrom:
@@ -281,7 +281,54 @@ spec:
         - containerPort: 8888
         - containerPort: 21000
         command: ["/bin/sh", "-c"]
-        args: ["export INDEX=${POD_NAME#contest-web-server-} && cmsContestWebServer -c=ALL $INDEX"]
+        args: ["export INDEX=${POD_NAME#contest-web-server-} && cmsContestWebServer -c=10 $INDEX"]
+        # livenessProbe:
+        #   tcpSocket:
+        #     port: 21000
+        #   initialDelaySeconds: 15
+        #   periodSeconds: 5
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cws
+  namespace: cms
+spec:
+  selector:
+    matchLabels:
+      app: cws
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: cws
+    spec:
+      # affinity:
+      #   nodeAffinity:
+      #     requiredDuringSchedulingIgnoredDuringExecution:
+      #       nodeSelectorTerms:
+      #       - matchExpressions:
+      #         - key: ejoi-role
+      #           operator: In
+      #           values: ["front", "back"]
+      containers:
+      - name: cms
+        image: giolekva/ioi-cms:latest
+        imagePullPolicy: Always
+        resources:
+          requests:
+            cpu: "500m"
+            memory: "300Mi"
+        env:
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        ports:
+        - containerPort: 8888
+        - containerPort: 21000
+        command: ["/bin/sh", "-c"]
+        args: ["export INDEX=${POD_NAME#contest-web-server-} && cmsContestWebServer -c=ALL 0"]
         # livenessProbe:
         #   tcpSocket:
         #     port: 21000
@@ -298,7 +345,7 @@ spec:
     matchLabels:
       app: tester
   serviceName: tester-headless
-  replicas: 12
+  replicas: 58
   template:
     metadata:
       labels:
@@ -314,13 +361,13 @@ spec:
                 values: ["tester"]
       containers:
       - name: cms
-        image: giolekva/ioi-cms:latest
+        image: giolekva/ioi-cms:tester
         imagePullPolicy: Always
         resources:
           requests:
-            cpu: "1500m"
+            cpu: "1300m"
           limits:
-            cpu: "3000m"
+            cpu: "2000m"
         env:
         - name: POD_NAME
           valueFrom:
@@ -343,3 +390,49 @@ spec:
         operator: "Equal"
         value: "value"
         effect: "NoSchedule"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rws
+  namespace: cms
+spec:
+  selector:
+    matchLabels:
+      app: rws
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: rws
+    spec:
+      # affinity:
+      #   nodeAffinity:
+      #     requiredDuringSchedulingIgnoredDuringExecution:
+      #       nodeSelectorTerms:
+      #       - matchExpressions:
+      #         - key: ejoi-role
+      #           operator: In
+      #           values: ["front", "back"]
+      containers:
+      - name: cms
+        image: giolekva/ioi-cms:latest
+        imagePullPolicy: Always
+        resources:
+          requests:
+            cpu: "500m"
+            memory: "300Mi"
+        env:
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        ports:
+        - containerPort: 8890
+        command: ["/bin/sh", "-c"]
+        args: ["cmsRankingWebServer --config=/usr/local/etc/ranking.conf"]
+        # livenessProbe:
+        #   tcpSocket:
+        #     port: 21000
+        #   initialDelaySeconds: 15
+        #   periodSeconds: 5
