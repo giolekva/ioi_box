@@ -41,8 +41,12 @@ RUN wget https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSI
 # Copy helper scripts
 ADD scripts/ /scripts/
 
-# Create an empty config file, we will mount the real one during startup
+# Copy config files
 COPY config/cms.conf /usr/local/etc/cms.conf
+COPY config/ranking.conf /usr/local/etc/ranking.conf
+
+# Copy flags
+COPY flags /var/local/lib/cms/ranking/flags
 
 # Expose logs
 VOLUME ["/var/local/log/cms"]
