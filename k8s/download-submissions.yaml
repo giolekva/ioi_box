@@ -2,12 +2,12 @@ kind: Pod
 apiVersion: v1
 metadata:
   name: download-submissions
-  namespace: cms
+  namespace: default
 spec:
   containers:
   - name: download
-    image: giolekva/ioi-cms:latest
+    image: giolekva/ioi-cms:download
     imagePullPolicy: Always
     command: ["/bin/sh"]
-    args: ["-c", "/scripts/download-submissions.sh"]
+    args: ["-c", "/scripts/download-submissions.sh $CONTEST_ID"]
   restartPolicy: Never

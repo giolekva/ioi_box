@@ -18,6 +18,10 @@ ENV LANG en_US.UTF-8
 ENV LANGUAGE en_US:en
 ENV LC_ALL en_US.UTF-8
 
+# Set timezone
+ENV TZ=Asia/Tbilisi
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+
 # Get CMS
 # RUN wget https://github.com/cms-dev/cms/releases/download/v1.4.rc1/v1.4.rc1.tar.gz
 # RUN tar xvf v1.4.rc1.tar.gz
@@ -35,8 +39,10 @@ RUN python3 setup.py install
 # Get the dockerize tool
 ENV DOCKERIZE_VERSION v0.6.1
 RUN wget https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSION/dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz \
-    && tar -C /usr/local/bin -xzvf dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz \
-    && rm dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz
+	&& tar -C /usr/local/bin -xzvf dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz \
+	&& rm dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz
+
+RUN apt-get -y install fpc
 
 # Copy helper scripts
 ADD scripts/ /scripts/

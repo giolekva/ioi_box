@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 # As a first argument expects csv file containing user data.
 # Each user must have: first name, last name, username, password and email.
 USERS="$1"
@@ -18,5 +20,5 @@ do
     	   -p "${user[3]}" \
     	   -e "${user[4]}" \
     	   --bcrypt
-    echo "Registered: ${user[0]} - ${user[1]} - ${user[2]}"    
+    echo "Registered: ${user[0]} - ${user[1]} - ${user[2]}"
 done < "$USERS"

@@ -63,12 +63,12 @@ spec:
       #           values: ["back", "front"]
       containers:
       - name: cms
-        image: giolekva/ioi-cms:latest
+        image: giolekva/ioi-cms:ranking
         imagePullPolicy: Always
         ports:
         - containerPort: 28600
         command: ["/bin/sh", "-c"]
-        args: ["cmsProxyService -c=10 0"]
+        args: ["cmsProxyService -c=13 0"]
         # livenessProbe:
         #   tcpSocket:
         #     port: 28600
@@ -181,7 +181,7 @@ spec:
       #           values: ["back", "front"]
       containers:
       - name: cms
-        image: giolekva/ioi-cms:tester
+        image: giolekva/ioi-cms:latest
         imagePullPolicy: Always
         resources:
           requests:
@@ -250,7 +250,7 @@ spec:
     matchLabels:
       app: contest-web-server
   serviceName: contest-web-server
-  replicas: 10
+  replicas: 3
   template:
     metadata:
       labels:
@@ -281,7 +281,7 @@ spec:
         - containerPort: 8888
         - containerPort: 21000
         command: ["/bin/sh", "-c"]
-        args: ["export INDEX=${POD_NAME#contest-web-server-} && cmsContestWebServer -c=10 $INDEX"]
+        args: ["export INDEX=${POD_NAME#contest-web-server-} && cmsContestWebServer -c=13 $INDEX"]
         # livenessProbe:
         #   tcpSocket:
         #     port: 21000
@@ -345,7 +345,7 @@ spec:
     matchLabels:
       app: tester
   serviceName: tester-headless
-  replicas: 58
+  replicas: 59
   template:
     metadata:
       labels:
@@ -361,7 +361,7 @@ spec:
                 values: ["tester"]
       containers:
       - name: cms
-        image: giolekva/ioi-cms:tester
+        image: giolekva/ioi-cms:latest
         imagePullPolicy: Always
         resources:
           requests:
